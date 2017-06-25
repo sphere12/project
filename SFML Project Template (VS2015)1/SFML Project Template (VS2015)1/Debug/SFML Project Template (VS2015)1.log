@@ -1,0 +1,17 @@
+﻿  Main.cpp
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(79): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(92): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(95): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(266): warning C4305: 'argument': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(274): warning C4305: '=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(295): warning C4244: 'initializing': conversion from 'sf::Int64' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(355): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(361): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(395): warning C4305: '+=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(396): warning C4305: '-=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(411): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(416): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(421): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(426): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1\sfml project template (vs2015)1\main.cpp(435): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  SFML Project Template (VS2015)1.vcxproj -> C:\Users\HP\Documents\SFML Project Template (VS2015)1\Debug\SFML Project Template (VS2015)1.exe
