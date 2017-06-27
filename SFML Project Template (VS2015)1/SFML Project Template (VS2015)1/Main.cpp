@@ -234,8 +234,8 @@ int main()
 	Brick brick3("ici100.png");
 	Clock clock;
 	//Barrier barr1("ici100.png", b2Vec2 (100,100));
-	Barrier icicle_down ("ici100.png", "barr1", b2Vec2(-200,200));
-	Barrier icicle_up ("ici100up.png", "barr2", b2Vec2(-200, 200));
+     Barrier icicle_down ("ici100.png", "barr1", b2Vec2(300, 0));
+	 Barrier icicle_up ("ici100up.png", "barr2", b2Vec2(1200, 1700));
 	////box2d////
 	//walls
 	Wall (-100, -100, 6200, 100);
