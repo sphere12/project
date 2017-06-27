@@ -10,10 +10,11 @@ const float SCALE = 30.f;
 const float DEG = 57.29577f;
 
 b2Vec2 Gravity(0.f, 19.8f);
-b2World World(Gravity);
+
 
 class Hero {
 private:
+	b2World* pWorld;
 	float x, y;
 public:
 	Texture herotexture;
@@ -26,7 +27,8 @@ public:
 	bool toRight;
 	float CurrentFrame;
 
-	Hero (String F) {
+	Hero (String F, b2World* w) {
+		pWorld = w;
 		onGround = false;
 		toRight = true;
 		CurrentFrame = 0;
@@ -43,7 +45,7 @@ public:
 		fdef.shape = &shape;
 		fdef.density = 2.2;
 		bdef.position.Set(0, 0);
-		heroBody = World.CreateBody(&bdef);
+		heroBody = pWorld->CreateBody(&bdef);
 		heroBody->CreateFixture(&fdef);
 		heroBody->SetUserData("hero");
 		heroBody->SetFixedRotation(true); //запрет вращения героя
@@ -68,6 +70,7 @@ public:
 
 class Barrier {
 private:
+	b2World* pWorld;
 	float x, y;
 public:
 	Texture barrtexture;
@@ -77,7 +80,8 @@ public:
 	b2FixtureDef fdef;
 	b2Body *barrBody;
 
-	Barrier (String F, char* str, b2Vec2 pos) {
+	Barrier (String F, char* str, b2Vec2 pos, b2World* w) {
+		pWorld = w;
 		barrtexture.loadFromFile("images/" + F);
 		barrtexture.setSmooth(true);
 		barrsprite.setTexture(barrtexture);
@@ -91,7 +95,7 @@ public:
 		fdef.shape = &shape;
 		fdef.density = 2.2;
 		bdef.position.Set((pos.x + 50) / SCALE, (pos.y + 50)/ SCALE);
-		barrBody = World.CreateBody(&bdef);
+		barrBody = pWorld->CreateBody(&bdef);
 		barrBody->CreateFixture(&fdef);
 		barrBody->SetUserData(str);
 	}
@@ -125,23 +129,26 @@ public:
 
 class Wall {
 public:
+	b2World* pWorld;
 	b2PolygonShape gr;
 	b2BodyDef bdef;
 	b2FixtureDef fdef;
 	b2Body *b_ground;
-	Wall (int x, int y, int w, int h) {
+	Wall (int x, int y, int w, int h, b2World* pw) {
+		pWorld = pw;
 		gr.SetAsBox(w * 0.5 / SCALE, h * 0.5 / SCALE);
 		bdef.position.Set((x + 0.5 * w) / SCALE, (y + 0.5 * h) / SCALE);
 		fdef.friction = 1;
 		fdef.shape = &gr;
 		//fdef.density = 2;
-		b_ground = World.CreateBody(&bdef);
+		b_ground = pWorld->CreateBody(&bdef);
 		b_ground->CreateFixture(&gr, 1);
 	}
 };
 
 
 void menu(RenderWindow & window) {
+	
 	Texture menuTexture1, menuTexture2, menuTexture3, aboutTexture, menuBackground;
 	menuTexture1.loadFromFile("images/112.png");
 	menuTexture2.loadFromFile("images/113.png");
@@ -196,70 +203,58 @@ void menu(RenderWindow & window) {
 	////////////////////////////////////////////////////
 }
 
-
-int main()
-{
+bool startGame() {
+	b2World World(Gravity);
+	b2World* pointerWorld = &World;
 	int map_mas[18][60];
 	//ofstream fout;
 	ifstream fin;
 	//fout.open("output.txt");
 	fin.open("map.txt");
-	
+
 	for (int i = 0; i < 18; i++)
 	{
 		for (int j = 0; j < 60; j++)
 			fin >> map_mas[i][j];
 	}
 
-	//for (int i = 0; i < 18; i++)
-	//{
-	//	for (int j = 0; j < 60; j++)
-	//		map_mas[i][j] = 0;
-	//}
-	
-	//for (int i = 0; i < 18; i++)
-	//{
-	//	for (int j = 0; j < 60; j++)
-	//		fout << map_mas[i][j] <<" ";
-	//	fout << "\n";
-	//}
-
 
 	RenderWindow window(sf::VideoMode(1000, 400), "Project");
 	window.setFramerateLimit(70); //макс кол-во кадров в секунду
 	View view;
-	Hero hero("hero_ice_two_floor.png");
+	Hero hero("hero_ice_two_floor.png", pointerWorld);
 	Brick brick("background_3.png");
 	Brick brick2("100.png");
 	Brick brick3("ici100.png");
 	Clock clock;
 	//Barrier barr1("ici100.png", b2Vec2 (100,100));
-     Barrier icicle_down ("ici100.png", "barr1", b2Vec2(300, 0));
-	 Barrier icicle_up ("ici100up.png", "barr2", b2Vec2(1200, 1700));
+	Barrier icicle_down("ici100.png", "barr1", b2Vec2(300, 0), pointerWorld);
+	Barrier icicle_up("ici100up.png", "barr2", b2Vec2(1200, 1700), pointerWorld);
 	////box2d////
 	//walls
-	Wall (-100, -100, 6200, 100);
-	Wall (-100, 0, 100, 1800);
-	Wall (-100, 1800, 6200, 100);
-	Wall (6000, 0, 100, 1800);
+	Wall(-100, -100, 6200, 100, pointerWorld);
+	Wall(-100, 0, 100, 1800, pointerWorld);
+	Wall(-100, 1800, 6200, 100, pointerWorld);
+	Wall(6000, 0, 100, 1800, pointerWorld);
 
 	for (int i = 0; i < 18; i++)
 	{
 		for (int j = 0; j < 60; j++)
 			if (map_mas[i][j] == 1)
-				Wall (j * 100, i * 100, 100, 100);
+				Wall(j * 100, i * 100, 100, 100, pointerWorld);
 			else if (map_mas[i][j] == 2)
-				Barrier icicle_down("ici100.png", "barr1", b2Vec2(100 * j, 100 * i));
+				Barrier icicle_down("ici100.png", "barr1", b2Vec2(100 * j, 100 * i), pointerWorld);
 			else if (map_mas[i][j] == 3)
-				Barrier icicle_up("ici100up.png", "barr2", b2Vec2(100 * j, 100 * i));
+				Barrier icicle_up("ici100up.png", "barr2", b2Vec2(100 * j, 100 * i), pointerWorld);
 	}
 
 	menu(window);//вызов меню
-	window.setSize(sf::Vector2u(1000, 600));
 
-	//////main cycle////////
+
+				 //////main cycle////////
 	while (window.isOpen())
 	{
+		window.setSize(sf::Vector2u(1000, 600));
 		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
 		time = time / 800; //скорость игры
@@ -273,43 +268,45 @@ int main()
 
 		b2Vec2 vel = hero.getHeroVel();
 		//float angVel = heroBody->GetAngularVelocity();
+		//if (Keyboard::isKeyPressed(Keyboard::Tab)) { return 1; }//если таб, то перезагружаем игру
+		if (Keyboard::isKeyPressed(Keyboard::Escape)) { window.clear(); return true; }//если эскейп, то перезагружаем игру
 
-		if (Keyboard::isKeyPressed(Keyboard::Left) && hero.onGround )
+		if (Keyboard::isKeyPressed(Keyboard::Left) && hero.onGround)
 		{
 			if (vel.x > -5)
 				hero.ApplyLinearImpulse(b2Vec2(-100, 0));
-			hero.toRight = false;	
+			hero.toRight = false;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::Right) && hero.onGround)
 		{
 			if (vel.x < 5)
-				hero.ApplyLinearImpulse (b2Vec2 (100, 0));
+				hero.ApplyLinearImpulse(b2Vec2(100, 0));
 			hero.toRight = true;
 		}
 
 		else if ((Keyboard::isKeyPressed(Keyboard::Up)) && hero.onGround)
-		{ 			 
-			if (hero.toRight) 
-				hero.herosprite.setTextureRect (IntRect (105 * 10, 0, 105, 180));			
-			else 
-				hero.herosprite.setTextureRect (IntRect (105, 180, 105, 180));
-			hero.ApplyLinearImpulse (b2Vec2 (0, -1000));
+		{
+			if (hero.toRight)
+				hero.herosprite.setTextureRect(IntRect(105 * 10, 0, 105, 180));
+			else
+				hero.herosprite.setTextureRect(IntRect(105, 180, 105, 180));
+			hero.ApplyLinearImpulse(b2Vec2(0, -1000));
 			hero.onGround = false;
 		}
 
 		//else if (Keyboard::isKeyPressed(Keyboard::Down)) { hero.dy += 0.1; }
 		else if (hero.onGround)
 			if (hero.toRight)
-				hero.herosprite.setTextureRect (IntRect (105 * 9, 0, 105, 180));
-			else 
+				hero.herosprite.setTextureRect(IntRect(105 * 9, 0, 105, 180));
+			else
 				hero.herosprite.setTextureRect(IntRect(105 * 2, 180, 105, 180));
 		else if (vel.y > 0.5)
-			if (hero.toRight) 
-				hero.herosprite.setTextureRect (IntRect (105 * 11, 0, 105, 180));
-			else 
-				hero.herosprite.setTextureRect (IntRect (0, 180, 105, 180)); 
-		
-		if ( (vel.x != 0) && hero.onGround)
+			if (hero.toRight)
+				hero.herosprite.setTextureRect(IntRect(105 * 11, 0, 105, 180));
+			else
+				hero.herosprite.setTextureRect(IntRect(0, 180, 105, 180));
+
+		if ((vel.x != 0) && hero.onGround)
 		{
 			if (hero.toRight)
 			{
@@ -325,12 +322,12 @@ int main()
 			}
 		}
 
-		view.setCenter (hero.getHeroPosition().x * SCALE, hero.getHeroPosition().y * SCALE);
+		view.setCenter(hero.getHeroPosition().x * SCALE, hero.getHeroPosition().y * SCALE);
 
-		window.setView (view);
-		window.clear (Color (12, 106, 89));
+		window.setView(view);
+		window.clear(Color(12, 106, 89));
 
-		World.Step (1 / 60.f, 8, 3);
+		World.Step(1 / 60.f, 8, 3);
 
 		////////// draw map /////////
 		//background
@@ -339,17 +336,17 @@ int main()
 		//walls
 		for (int i = -1; i < 61; i++)
 		{
-			brick2.Draw (100 * i, 1800, 100, 100);
-			window.draw (brick2.s_brick);
+			brick2.Draw(100 * i, 1800, 100, 100);
+			window.draw(brick2.s_brick);
 		}
 		for (int i = -1; i < 61; i++)
 		{
-			brick2.Draw (100 * i, -100, 100, 100);
-			window.draw (brick2.s_brick);
+			brick2.Draw(100 * i, -100, 100, 100);
+			window.draw(brick2.s_brick);
 		}
 		for (int i = 0; i < 18; i++)
 		{
-			brick2.Draw (-100, 100 * i, 100, 100);
+			brick2.Draw(-100, 100 * i, 100, 100);
 			window.draw(brick2.s_brick);
 		}
 		for (int i = 0; i < 18; i++)
@@ -394,9 +391,9 @@ int main()
 			{
 				b2Vec2 pos = it->GetPosition();
 				float angle = it->GetAngle();
-				hero.herosprite.setPosition (pos.x * SCALE, pos.y * SCALE);
-				hero.herosprite.setRotation (angle * DEG);
-				window.draw (hero.herosprite);
+				hero.herosprite.setPosition(pos.x * SCALE, pos.y * SCALE);
+				hero.herosprite.setRotation(angle * DEG);
+				window.draw(hero.herosprite);
 			}
 		}
 
@@ -426,12 +423,12 @@ int main()
 		heroPos5.y -= 91 / SCALE;
 		heroPos4.x += 43.5 / SCALE;
 		heroPos5.x -= 43.5 / SCALE;
-		
+
 		heroPos6.y += 70 / SCALE;
 		heroPos7.y -= 70 / SCALE;
 		heroPos6.x += 43.5 / SCALE;
 		heroPos7.x += 43.5 / SCALE;
-		
+
 		heroPos8.y += 70 / SCALE;
 		heroPos9.y -= 70 / SCALE;
 		heroPos8.x -= 43.5 / SCALE;
@@ -441,12 +438,25 @@ int main()
 			if (it->GetUserData() == "barr2" || it->GetUserData() == "barr1")
 				for (b2Fixture *f = it->GetFixtureList(); f != 0; f = f->GetNext())
 					if (f->TestPoint(heroPos) || f->TestPoint(heroPos1) || f->TestPoint(heroPos2)
-						|| f->TestPoint(heroPos4)|| f->TestPoint(heroPos5)|| f->TestPoint(heroPos6)
-						|| f->TestPoint(heroPos7)|| f->TestPoint(heroPos8)|| f->TestPoint(heroPos9))
-						return 1;
+						|| f->TestPoint(heroPos4) || f->TestPoint(heroPos5) || f->TestPoint(heroPos6)
+						|| f->TestPoint(heroPos7) || f->TestPoint(heroPos8) || f->TestPoint(heroPos9))
+					{
+						window.clear();
+						return true;
+					}
 		///////////////////
 		window.display();
 	}
 
+	return 0;
+}
+
+void gameRunning() {//ф-ция перезагружает игру , если это необходимо
+	if (startGame()) { gameRunning(); }////если startGame() == true, то вызываем занова ф-цию isGameRunning, которая в свою очередь опять вызывает startGame() 
+}
+
+int main()
+{
+	gameRunning();//запускаем процесс игры
 	return 0;
 }
