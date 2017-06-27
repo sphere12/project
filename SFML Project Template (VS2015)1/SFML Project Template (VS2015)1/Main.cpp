@@ -2,134 +2,143 @@
 #include <Box2D/Box2D.h>
 #include <fstream>
 //#include <b2World.h>
-#include "Menu.h"
 
 using namespace sf;
 using namespace std;
-//using namespace b2World;
 
 const float SCALE = 30.f;
 const float DEG = 57.29577f;
 
 b2Vec2 Gravity(0.f, 19.8f);
-//b2Vec2 Gravity(19.8f, 19.8f);
 b2World World(Gravity);
 
 class Hero {
 private:
 	float x, y;
 public:
-	//float dx, dy, speed;
-	//bool dirRight;
 	Texture herotexture;
 	Sprite herosprite;
+	b2PolygonShape shape;
+	b2BodyDef bdef;
+	b2FixtureDef fdef;
+	b2Body *heroBody;
+	bool onGround;
+	bool toRight;
+	float CurrentFrame;
 
-	Hero(String F) {
-	//	dx = 0;
-	//	dy = 0;
-	//	speed = 0;
-	//	dirRight = true; //
+	Hero (String F) {
+		onGround = false;
+		toRight = true;
+		CurrentFrame = 0;
 		herotexture.loadFromFile("hero/" + F);
 		herotexture.setSmooth(true);
 		herosprite.setTexture(herotexture);
 		herosprite.setTextureRect(IntRect(0, 0, 105, 180));
 		herosprite.setPosition(x, y);
 		herosprite.setOrigin(52.5, 90);
+		
+		shape.SetAsBox(42.5 / SCALE, 90 / SCALE);		
+		bdef.type = b2_dynamicBody;
+		fdef.friction = 0.5;
+		fdef.shape = &shape;
+		fdef.density = 2.2;
+		bdef.position.Set(0, 0);
+		heroBody = World.CreateBody(&bdef);
+		heroBody->CreateFixture(&fdef);
+		heroBody->SetUserData("hero");
+		heroBody->SetFixedRotation(true); //запрет вращения героя
 	}
 
-	float getHeroCoordinateX()
-	{
-		return x;
-	}
-	float getHeroCoordinateY()
-	{
-		return y;
+	b2Vec2 getHeroPosition()
+	{ 
+		return heroBody->GetPosition();
 	}
 
-	//void update(float time)
-	//{
-	//	//x += dx * time;
-	//	//y += dy * time;
-	//	herosprite.setPosition(x, y);
-	//	//dx = 0;
-	//	//dy = 0;
-	//	//ограничения передвижения героя за края карты
-	//	//if (x < 0) x = 0;
-	//	//if (y < -600) y = -600;
-	//	//if (y > 420) y = 420;
-	//}
+	b2Vec2 getHeroVel()
+	{ 
+		return heroBody->GetLinearVelocity();
+	}
+
+	void ApplyLinearImpulse(b2Vec2 vec)
+	{
+		heroBody->ApplyLinearImpulse(vec, heroBody->GetWorldCenter(), 1);
+	}
 
 };
 
-class Map {
+class Barrier {
+private:
+	float x, y;
 public:
-	Image map_image;
-	Texture map;
-	Sprite s_map;
+	Texture barrtexture;
+	Sprite barrsprite;
+	b2PolygonShape shape;
+	b2BodyDef bdef;
+	b2FixtureDef fdef;
+	b2Body *barrBody;
 
-	Map(String F)
+	Barrier (String F, char* str, b2Vec2 pos) {
+		barrtexture.loadFromFile("images/" + F);
+		barrtexture.setSmooth(true);
+		barrsprite.setTexture(barrtexture);
+		barrsprite.setTextureRect(IntRect(0, 0, 100, 100));
+		barrsprite.setPosition(x, y);
+		barrsprite.setOrigin(50, 50);
+
+		shape.SetAsBox(50 / SCALE, 50 / SCALE);
+		bdef.type = b2_dynamicBody;
+		fdef.friction = 0.5;
+		fdef.shape = &shape;
+		fdef.density = 2.2;
+		bdef.position.Set((pos.x + 50) / SCALE, (pos.y + 50)/ SCALE);
+		barrBody = World.CreateBody(&bdef);
+		barrBody->CreateFixture(&fdef);
+		barrBody->SetUserData(str);
+	}
+
+	void ApplyLinearImpulse(b2Vec2 vec)
 	{
-		map_image.loadFromFile("images/" + F);//загружаем файл для карты
-		map.loadFromImage(map_image);//заряжаем текстуру картинкой
-		s_map.setTexture(map);//заливаем текстуру спрайтом
+		barrBody->ApplyLinearImpulse(vec, barrBody->GetWorldCenter(), 1);
+	}
+
+};
+
+class Brick {
+public:
+	Image brick_image;
+	Texture brick;
+	Sprite s_brick;
+
+	Brick(String F)
+	{
+		brick_image.loadFromFile("images/" + F);//загружаем файл для карты
+		brick.loadFromImage(brick_image);//заряжаем текстуру картинкой
+		s_brick.setTexture(brick);//заливаем текстуру спрайтом
 	}
 
 	void Draw(float X, float Y, float w, float h) {
-		s_map.setPosition(X, Y);
-		s_map.setTextureRect(IntRect(0, 0, w, h));
+		s_brick.setPosition(X, Y);
+		s_brick.setTextureRect(IntRect(0, 0, w, h));
 	}
 
 };
 
-//class Gravity {
-//
-//
-//};
-
-void setWall(int x, int y, int w, int h)
-{
+class Wall {
+public:
 	b2PolygonShape gr;
-	gr.SetAsBox(w * 0.5 / SCALE, h * 0.5 / SCALE);
-
 	b2BodyDef bdef;
-	bdef.position.Set( (x + 0.5 * w)  / SCALE, (y + 0.5 * h) / SCALE);
-
 	b2FixtureDef fdef;
-	fdef.friction = 1;
-	fdef.shape = &gr;
-	//fdef.density = 2;
-
-	b2Body *b_ground = World.CreateBody (&bdef);
-	b_ground->CreateFixture(&gr, 1);
-}
-
-void setCircleWall(int x, int y, int r)
-{
-	b2CircleShape circle;
-	circle.m_radius = r / SCALE;
-
-	b2BodyDef bdef;
-	bdef.position.Set(x / SCALE, y / SCALE);
-
-	b2Body *b_ground = World.CreateBody(&bdef);
-	b_ground->CreateFixture(&circle, 1);
-}
-
-//b2Body heroBody = setBody (char* s, double density)
-//{
-//	b2PolygonShape shape;
-//	shape.SetAsBox(105 / SCALE, 180 / SCALE);
-//
-//	b2BodyDef bdef;
-//	bdef.type = b2_dynamicBody;
-//
-//	bdef.position.Set(100 / SCALE, 0);
-//	b2Body *heroBody = World.CreateBody(&bdef);
-//	heroBody->CreateFixture(&shape, density);
-//	heroBody->SetUserData(s);
-//
-//	return heroBody;
-//}
+	b2Body *b_ground;
+	Wall (int x, int y, int w, int h) {
+		gr.SetAsBox(w * 0.5 / SCALE, h * 0.5 / SCALE);
+		bdef.position.Set((x + 0.5 * w) / SCALE, (y + 0.5 * h) / SCALE);
+		fdef.friction = 1;
+		fdef.shape = &gr;
+		//fdef.density = 2;
+		b_ground = World.CreateBody(&bdef);
+		b_ground->CreateFixture(&gr, 1);
+	}
+};
 
 
 void menu(RenderWindow & window) {
@@ -173,7 +182,7 @@ void menu(RenderWindow & window) {
 				window.draw(about);
 				window.display();
 				while (!Keyboard::isKeyPressed(Keyboard::Escape)) {
-								
+
 				}
 			}
 			if (menuNum == 3) { window.close(); isMenu = false; }
@@ -188,13 +197,8 @@ void menu(RenderWindow & window) {
 }
 
 
-
 int main()
 {
-	float Vx = 0, Vy = 0;
-	bool onGround = false;
-	bool toRight = true;
-
 	int map_mas[18][60];
 	//ofstream fout;
 	ifstream fin;
@@ -223,75 +227,39 @@ int main()
 
 	RenderWindow window(sf::VideoMode(1000, 400), "Project");
 	window.setFramerateLimit(70); //макс кол-во кадров в секунду
-
 	View view;
-
 	Hero hero("hero_ice_two_floor.png");
-	Map map("background_3.png");
-	Map map2("100.png");
-
-	float CurrentFrame = 0;
+	Brick brick("background_3.png");
+	Brick brick2("100.png");
+	Brick brick3("ici100.png");
 	Clock clock;
-
-	RectangleShape rectangle (Vector2f(120, 50));
-	//sf::RectangleShape rectangle;
-	//rectangle.setSize(sf::Vector2f(100, 50));
-	//rectangle.setOutlineColor(sf::Color::Red);
-	//rectangle.setOutlineThickness(5);
-	//rectangle.setPosition(10, 20);
-
+	//Barrier barr1("ici100.png", b2Vec2 (100,100));
+	Barrier icicle_down ("ici100.png", "barr1", b2Vec2(-200,200));
+	Barrier icicle_up ("ici100up.png", "barr2", b2Vec2(-200, 200));
 	////box2d////
 	//walls
-	setWall (-100, -100, 6200, 100);
-	setWall (-100, 0, 100, 1800);
-	setWall (-100, 1800, 6200, 100);
-	setWall (6000, 0, 100, 1800);
+	Wall (-100, -100, 6200, 100);
+	Wall (-100, 0, 100, 1800);
+	Wall (-100, 1800, 6200, 100);
+	Wall (6000, 0, 100, 1800);
 
 	for (int i = 0; i < 18; i++)
 	{
 		for (int j = 0; j < 60; j++)
-			if (map_mas[i][j])
-				setWall (j * 100, i * 100, 100, 100);
+			if (map_mas[i][j] == 1)
+				Wall (j * 100, i * 100, 100, 100);
+			else if (map_mas[i][j] == 2)
+				Barrier icicle_down("ici100.png", "barr1", b2Vec2(100 * j, 100 * i));
+			else if (map_mas[i][j] == 3)
+				Barrier icicle_up("ici100up.png", "barr2", b2Vec2(100 * j, 100 * i));
 	}
 
-	//setWall (900, 50, 100, 50);
-
-	//setWall (500, 650, 100, 200);
-	//setCircleWall (600, 1200, 700);
-	
-	//HERO
-	//b2Body* heroBody = setBody ("hero", 2);
-
-	b2PolygonShape shape;
-	shape.SetAsBox (42.5 / SCALE, 90 / SCALE);
-	
-	b2BodyDef bdef;
-	bdef.type = b2_dynamicBody;
-
-	b2FixtureDef fdef;
-	fdef.friction = 0.5;
-	fdef.shape = &shape;
-	fdef.density = 2.2;
-
-	bdef.position.Set (0, 0);
-	b2Body *heroBody = World.CreateBody(&bdef);
-	//heroBody->CreateFixture(&shape, 2);
-	heroBody->CreateFixture(&fdef);
-	heroBody->SetUserData("hero");
-	heroBody->SetFixedRotation(true); //запрет вращения героя
-
-	//RenderWindow window(sf::VideoMode(1376, 768), "Kychka-pc.ru 31");
 	menu(window);//вызов меню
 	window.setSize(sf::Vector2u(1000, 600));
 
+	//////main cycle////////
 	while (window.isOpen())
 	{
-
-		if (hero.getHeroCoordinateX() > 1000)
-		{
-			b2Vec2 Gravity(19.8f, 19.8f);
-			b2World World(Gravity);
-		}
 		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
 		time = time / 800; //скорость игры
@@ -303,146 +271,125 @@ int main()
 				window.close();
 		}
 
-		b2Vec2 vel = heroBody->GetLinearVelocity();
+		b2Vec2 vel = hero.getHeroVel();
 		//float angVel = heroBody->GetAngularVelocity();
 
-		if (Keyboard::isKeyPressed(Keyboard::Left) && onGround )
+		if (Keyboard::isKeyPressed(Keyboard::Left) && hero.onGround )
 		{
-			//CurrentFrame += 0.01 * time;
-			//if (CurrentFrame > 8) CurrentFrame = 1;
-			//hero.herosprite.setTextureRect(IntRect(105 * int(CurrentFrame + 2) , 180, 105, 180));
 			if (vel.x > -5)
-				heroBody->ApplyLinearImpulse(b2Vec2(-100, 0), heroBody->GetWorldCenter(), 1);
-			toRight = false;	
+				hero.ApplyLinearImpulse(b2Vec2(-100, 0));
+			hero.toRight = false;	
 		}
-		//if ((Keyboard::isKeyPressed(Keyboard::Right) || (Keyboard::isKeyPressed(Keyboard::D))))
-		else if (Keyboard::isKeyPressed(Keyboard::Right) && onGround)
+		else if (Keyboard::isKeyPressed(Keyboard::Right) && hero.onGround)
 		{
-			//CurrentFrame += 0.01 * time;
-			//if (CurrentFrame > 8) CurrentFrame = 1;
-			//hero.herosprite.setTextureRect (IntRect (105 * int (CurrentFrame), 0, 105, 180));
 			if (vel.x < 5)
-				heroBody->ApplyLinearImpulse (b2Vec2 (100, 0), heroBody->GetWorldCenter (), 1);
-			toRight = true;
+				hero.ApplyLinearImpulse (b2Vec2 (100, 0));
+			hero.toRight = true;
 		}
 
-		else if ((Keyboard::isKeyPressed(Keyboard::Up)) && onGround) 
+		else if ((Keyboard::isKeyPressed(Keyboard::Up)) && hero.onGround)
 		{ 			 
-			if (toRight) 
+			if (hero.toRight) 
 				hero.herosprite.setTextureRect (IntRect (105 * 10, 0, 105, 180));			
 			else 
 				hero.herosprite.setTextureRect (IntRect (105, 180, 105, 180));
-			heroBody->ApplyLinearImpulse (b2Vec2 (0, -1000), heroBody->GetWorldCenter (), 1);
-			onGround = false;
+			hero.ApplyLinearImpulse (b2Vec2 (0, -1000));
+			hero.onGround = false;
 		}
 
 		//else if (Keyboard::isKeyPressed(Keyboard::Down)) { hero.dy += 0.1; }
-		else if (onGround) 
-			if (toRight)
+		else if (hero.onGround)
+			if (hero.toRight)
 				hero.herosprite.setTextureRect (IntRect (105 * 9, 0, 105, 180));
 			else 
 				hero.herosprite.setTextureRect(IntRect(105 * 2, 180, 105, 180));
 		else if (vel.y > 0.5)
-			if (toRight) 
+			if (hero.toRight) 
 				hero.herosprite.setTextureRect (IntRect (105 * 11, 0, 105, 180));
 			else 
 				hero.herosprite.setTextureRect (IntRect (0, 180, 105, 180)); 
 		
-		if ( (vel.x != 0) && onGround)
+		if ( (vel.x != 0) && hero.onGround)
 		{
-			if (toRight)
+			if (hero.toRight)
 			{
-				CurrentFrame += 0.01 * time;
-				if (CurrentFrame > 8) CurrentFrame = 1;
-				hero.herosprite.setTextureRect(IntRect(105 * int(CurrentFrame), 0, 105, 180));
+				hero.CurrentFrame += 0.01 * time;
+				if (hero.CurrentFrame > 8) hero.CurrentFrame = 1;
+				hero.herosprite.setTextureRect(IntRect(105 * int(hero.CurrentFrame), 0, 105, 180));
 			}
 			else
 			{
-				CurrentFrame += 0.01 * time;
-				if (CurrentFrame > 8) CurrentFrame = 1;
-				hero.herosprite.setTextureRect(IntRect(105 * int(CurrentFrame + 2), 180, 105, 180));
+				hero.CurrentFrame += 0.01 * time;
+				if (hero.CurrentFrame > 8) hero.CurrentFrame = 1;
+				hero.herosprite.setTextureRect(IntRect(105 * int(hero.CurrentFrame + 2), 180, 105, 180));
 			}
 		}
-		
-		//hero.update (time);
 
-		//Vx = hero.getHeroCoordinateX();
-		//Vy = hero.getHeroCoordinateY();
-		b2Vec2 pos = heroBody->GetPosition ();
-		Vx = pos.x * SCALE;
-		Vy = pos.y * SCALE;
-
-		//ограничения камеры
-		//if (Vx < 500) Vx = 500;//убираем из вида левую сторону
-		//if (Vy < -200) Vy = -200;//верхнюю сторону
-		//if (Vy > 180) Vy = 180;//нижнюю сторону
-
-		view.setCenter (Vx, Vy);
+		view.setCenter (hero.getHeroPosition().x * SCALE, hero.getHeroPosition().y * SCALE);
 
 		window.setView (view);
 		window.clear (Color (12, 106, 89));
 
 		World.Step (1 / 60.f, 8, 3);
 
-		///////check if onGround////////
-		b2Vec2 heroPos = heroBody->GetPosition ();
-		b2Vec2 heroPos1 = heroBody->GetPosition ();
-		b2Vec2 heroPos2 = heroBody->GetPosition();
-		onGround = false;
-		heroPos.y += 91 / SCALE;
-		heroPos1.y += 91 / SCALE;
-		heroPos2.y += 91 / SCALE;
-		heroPos1.x += 42.5 / SCALE;
-		heroPos2.x -= 42.5 / SCALE;
-		for (b2Body* it = World.GetBodyList(); it != 0; it = it->GetNext())
-			for (b2Fixture *f = it->GetFixtureList(); f != 0; f = f->GetNext())
-				if (f->TestPoint(heroPos)|| f->TestPoint(heroPos1)|| f->TestPoint(heroPos2)) onGround = true;
-
 		////////// draw map /////////
-		//map.s_map.setPosition(0, 0);
-		//map.s_map.setTextureRect(IntRect(0, 0, 1024, 600));
-		//window.draw(map.s_map);
-		map.Draw(0, 0, 6000, 1800);
-		window.draw(map.s_map);
-		//map.Draw(6000, -1000, 6000, 1800);
-		//window.draw(map.s_map);
+		//background
+		brick.Draw(0, 0, 6000, 1800);
+		window.draw(brick.s_brick);
+		//walls
 		for (int i = -1; i < 61; i++)
 		{
-			map2.Draw (100 * i, 1800, 100, 100);
-			window.draw (map2.s_map);
+			brick2.Draw (100 * i, 1800, 100, 100);
+			window.draw (brick2.s_brick);
 		}
 		for (int i = -1; i < 61; i++)
 		{
-			map2.Draw (100 * i, -100, 100, 100);
-			window.draw (map2.s_map);
+			brick2.Draw (100 * i, -100, 100, 100);
+			window.draw (brick2.s_brick);
 		}
 		for (int i = 0; i < 18; i++)
 		{
-			map2.Draw (-100, 100 * i, 100, 100);
-			window.draw(map2.s_map);
+			brick2.Draw (-100, 100 * i, 100, 100);
+			window.draw(brick2.s_brick);
 		}
 		for (int i = 0; i < 18; i++)
 		{
-			map2.Draw(6000, 100 * i, 100, 100);
-			window.draw(map2.s_map);
+			brick2.Draw(6000, 100 * i, 100, 100);
+			window.draw(brick2.s_brick);
 		}
-
+		//map
 		for (int i = 0; i < 18; i++)
 		{
 			for (int j = 0; j < 60; j++)
-				if (map_mas[i][j])
+				if (map_mas[i][j] == 1)
 				{
-					map2.Draw(100 * j, 100 * i, 100, 100);
-					window.draw(map2.s_map);
+					brick2.Draw(100 * j, 100 * i, 100, 100);
+					window.draw(brick2.s_brick);
 				}
 		}
 
-		//window.draw(hero.herosprite);
-		//window.draw(rectangle);
-		
+		brick3.Draw(1000, 0, 100, 100);
+		window.draw(brick3.s_brick);
+
 		////draw bodies//// 
 		for (b2Body* it = World.GetBodyList(); it != 0; it = it->GetNext())
 		{
+			if (it->GetUserData() == "barr1")
+			{
+				b2Vec2 pos = it->GetPosition();
+				float angle = it->GetAngle();
+				icicle_down.barrsprite.setPosition(pos.x * SCALE, pos.y * SCALE);
+				icicle_down.barrsprite.setRotation(angle * DEG);
+				window.draw(icicle_down.barrsprite);
+			}
+			if (it->GetUserData() == "barr2")
+			{
+				b2Vec2 pos = it->GetPosition();
+				float angle = it->GetAngle();
+				icicle_up.barrsprite.setPosition(pos.x * SCALE, pos.y * SCALE);
+				icicle_up.barrsprite.setRotation(angle * DEG);
+				window.draw(icicle_up.barrsprite);
+			}
 			if (it->GetUserData() == "hero")
 			{
 				b2Vec2 pos = it->GetPosition();
@@ -452,8 +399,52 @@ int main()
 				window.draw (hero.herosprite);
 			}
 		}
-		///////////////////
 
+		///////check if onGround////////
+		b2Vec2 heroPos = hero.getHeroPosition();
+		b2Vec2 heroPos1 = hero.getHeroPosition();
+		b2Vec2 heroPos2 = hero.getHeroPosition();
+		hero.onGround = false;
+		heroPos.y += 91 / SCALE;
+		heroPos1.y += 91 / SCALE;
+		heroPos2.y += 91 / SCALE;
+		heroPos1.x += 42.5 / SCALE;
+		heroPos2.x -= 42.5 / SCALE;
+		for (b2Body* it = World.GetBodyList(); it != 0; it = it->GetNext())
+			for (b2Fixture *f = it->GetFixtureList(); f != 0; f = f->GetNext())
+				if (f->TestPoint(heroPos) || f->TestPoint(heroPos1) || f->TestPoint(heroPos2))
+					hero.onGround = true;
+
+		///////Events////////
+		b2Vec2 heroPos4 = hero.getHeroPosition();
+		b2Vec2 heroPos5 = hero.getHeroPosition();
+		b2Vec2 heroPos6 = hero.getHeroPosition();
+		b2Vec2 heroPos7 = hero.getHeroPosition();
+		b2Vec2 heroPos8 = hero.getHeroPosition();
+		b2Vec2 heroPos9 = hero.getHeroPosition();
+		heroPos4.y -= 91 / SCALE;
+		heroPos5.y -= 91 / SCALE;
+		heroPos4.x += 43.5 / SCALE;
+		heroPos5.x -= 43.5 / SCALE;
+		
+		heroPos6.y += 70 / SCALE;
+		heroPos7.y -= 70 / SCALE;
+		heroPos6.x += 43.5 / SCALE;
+		heroPos7.x += 43.5 / SCALE;
+		
+		heroPos8.y += 70 / SCALE;
+		heroPos9.y -= 70 / SCALE;
+		heroPos8.x -= 43.5 / SCALE;
+		heroPos9.x -= 43.5 / SCALE;
+
+		for (b2Body* it = World.GetBodyList(); it != 0; it = it->GetNext())
+			if (it->GetUserData() == "barr2" || it->GetUserData() == "barr1")
+				for (b2Fixture *f = it->GetFixtureList(); f != 0; f = f->GetNext())
+					if (f->TestPoint(heroPos) || f->TestPoint(heroPos1) || f->TestPoint(heroPos2)
+						|| f->TestPoint(heroPos4)|| f->TestPoint(heroPos5)|| f->TestPoint(heroPos6)
+						|| f->TestPoint(heroPos7)|| f->TestPoint(heroPos8)|| f->TestPoint(heroPos9))
+						return 1;
+		///////////////////
 		window.display();
 	}
 
