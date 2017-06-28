@@ -16,6 +16,72 @@ class Hero {
 private:
 	b2World* pWorld;
 	float x, y;
+
+	Hero(String F, b2World* w) {
+		pWorld = w;
+		onGround = false;
+		toRight = true;
+		CurrentFrame = 0;
+		herotexture.loadFromFile("hero/" + F);
+		herotexture.setSmooth(true);
+		herosprite.setTexture(herotexture);
+		herosprite.setTextureRect(IntRect(0, 0, 105, 180));
+		herosprite.setPosition(x, y);
+		herosprite.setOrigin(52.5, 90);
+
+		shape.SetAsBox(42.5 / SCALE, 90 / SCALE);
+		bdef.type = b2_dynamicBody;
+		fdef.friction = 0.5;
+		fdef.shape = &shape;
+		fdef.density = 2.2;
+		bdef.position.Set(0, 0);
+		heroBody = pWorld->CreateBody(&bdef);
+		heroBody->CreateFixture(&fdef);
+		heroBody->SetUserData("hero");
+		heroBody->SetFixedRotation(true); //запрет вращения героя
+	}
+
+
+public:
+	Texture herotexture;
+	Sprite herosprite;
+	b2PolygonShape shape;
+	b2BodyDef bdef;
+	b2FixtureDef fdef;
+	b2Body *heroBody;
+	bool onGround;
+	bool toRight;
+	float CurrentFrame;
+
+	static const Hero& Instance(String F, b2World* w)
+	{
+		static Hero theSingleInstance(F, w);
+		return theSingleInstance;
+	}
+
+
+	b2Vec2 getHeroPosition()
+	{
+		return heroBody->GetPosition();
+	}
+
+	b2Vec2 getHeroVel()
+	{
+		return heroBody->GetLinearVelocity();
+	}
+
+	void ApplyLinearImpulse(b2Vec2 vec)
+	{
+		heroBody->ApplyLinearImpulse(vec, heroBody->GetWorldCenter(), 1);
+	}
+
+};
+
+/*
+class Hero {
+private:
+	b2World* pWorld;
+	float x, y;
 public:
 	Texture herotexture;
 	Sprite herosprite;
@@ -67,6 +133,7 @@ public:
 	}
 
 };
+*/
 
 class Barrier {
 private:
@@ -222,7 +289,7 @@ bool startGame() {
 	RenderWindow window(sf::VideoMode(1000, 400), "Project");
 	window.setFramerateLimit(70); //макс кол-во кадров в секунду
 	View view;
-	Hero hero("hero_ice_two_floor.png", pointerWorld);
+	Hero hero = Hero::Instance("hero_ice_two_floor.png", pointerWorld);
 	Brick brick("background_3.png");
 	Brick brick2("100.png");
 	Brick brick3("ici100.png");

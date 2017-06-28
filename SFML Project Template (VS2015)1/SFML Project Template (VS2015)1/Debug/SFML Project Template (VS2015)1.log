@@ -1,26 +1,26 @@
 ﻿  Main.cpp
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(42): warning C4305: 'argument': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(46): warning C4305: '=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(96): warning C4305: '=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(125): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(139): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(140): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(246): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(248): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(258): warning C4244: 'initializing': conversion from 'sf::Int64' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(313): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(319): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(339): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(344): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(349): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(354): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(363): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(408): warning C4305: '+=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(409): warning C4305: '-=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(424): warning C4305: '+=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(425): warning C4305: '-=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(429): warning C4305: '+=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(430): warning C4305: '+=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(434): warning C4305: '-=': truncation from 'double' to 'float32'
-c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(435): warning C4305: '-=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(32): warning C4305: 'argument': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(36): warning C4305: '=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(163): warning C4305: '=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(192): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(206): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(207): warning C4244: 'argument': conversion from 'double' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(313): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(315): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(325): warning C4244: 'initializing': conversion from 'sf::Int64' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(380): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(386): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(406): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(411): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(416): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(421): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(430): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(475): warning C4305: '+=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(476): warning C4305: '-=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(491): warning C4305: '+=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(492): warning C4305: '-=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(496): warning C4305: '+=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(497): warning C4305: '+=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(501): warning C4305: '-=': truncation from 'double' to 'float32'
+c:\users\hp\documents\sfml project template (vs2015)1 — копия\sfml project template (vs2015)1\main.cpp(502): warning C4305: '-=': truncation from 'double' to 'float32'
   SFML Project Template (VS2015)1.vcxproj -> C:\Users\HP\Documents\SFML Project Template (VS2015)1 — копия\Debug\SFML Project Template (VS2015)1.exe
